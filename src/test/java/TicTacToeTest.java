@@ -1,14 +1,18 @@
 /*
 @author Shurel Reynolds
 */
+
 import com.shurel.tictactoe.Player;
 import com.shurel.tictactoe.TicTacToe;
 import com.shurel.tictactoe.TicTacToeException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 import java.awt.*;
+
+import static org.junit.Assert.assertEquals;
 
 public class TicTacToeTest {
 
@@ -18,9 +22,13 @@ public class TicTacToeTest {
 
     @Before
     public void setUp() {
-        player1=new Player("Player 1",'X');
-        player2=new Player("Player 2",'O');
-        ticTacToe = new TicTacToe(player1,player2);
+        player1=new Player("Player 1");
+        player2=new Player("Player 2");
+        try {
+            ticTacToe = new TicTacToe(player1,player2);
+        } catch (TicTacToeException e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -31,49 +39,63 @@ public class TicTacToeTest {
 
     @Test
     public void testPlayerNames() {
-        Assert.assertEquals("Player 1", ticTacToe.getPlayer1().getName());
-        Assert.assertEquals("Player 2", ticTacToe.getPlayer2().getName());
+        assertEquals("Player 1", ticTacToe.getPlayer1().getName());
+        assertEquals("Player 2", ticTacToe.getPlayer2().getName());
 
     }
 
     @Test
     public void testPlayerSymbols() {
-        Assert.assertEquals('X', ticTacToe.getPlayer1().getSymbol());
-        Assert.assertEquals('O', ticTacToe.getPlayer2().getSymbol());
+        assertEquals('X', ticTacToe.getPlayer1().getSymbol());
+        assertEquals('O', ticTacToe.getPlayer2().getSymbol());
 
     }
 
     @Test
     public void testWhoIsNext() {
-        Assert.assertEquals(ticTacToe.getPlayer1(), ticTacToe.whoIsNext());
+        assertEquals(ticTacToe.getPlayer1(), ticTacToe.whoIsNext());
     }
 
     @Test
     public void testIsGameOver() {
-        Assert.assertEquals(false, ticTacToe.isGameOver());
+        assertEquals(false, ticTacToe.isGameOver());
     }
 
     @Test
     public void testPlayerCanMove() {
-        Assert.assertEquals(false, ticTacToe.canMove(ticTacToe.getPlayer2()));
-        Assert.assertEquals(true, ticTacToe.canMove(ticTacToe.getPlayer1()));
+        assertEquals(false, ticTacToe.canMove(ticTacToe.getPlayer2()));
+        assertEquals(true, ticTacToe.canMove(ticTacToe.getPlayer1()));
     }
 
     @Test
     public void testPlayerMove() {
         Point point=new Point(2,0);
-        Assert.assertEquals(true, ticTacToe.canMove(point));
+        assertEquals(true, ticTacToe.canMove(point));
+        Player nextPlayer=ticTacToe.whoIsNext();
+        int moveCount=nextPlayer.getMoves().size();
 
         try {
-       ticTacToe.move(player1,point);
+            ticTacToe.move(point);
+            // move was made with output
+            String expected="--X\n---\n---";
+            assertEquals(expected, ticTacToe.getGrid());
+           //check moves made by player
+            assertEquals(moveCount+1, nextPlayer.getMoves().size());
+            //check who is next
+            Assert.assertNotEquals(nextPlayer,ticTacToe.whoIsNext());
+
         } catch (TicTacToeException e) {
             e.printStackTrace();
         }
-        Assert.assertEquals(false, ticTacToe.canMove(point));
 
 
         //who is next = player 2;
     }
+
+
+
+
+
 
 
 }

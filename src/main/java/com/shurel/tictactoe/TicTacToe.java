@@ -18,13 +18,25 @@ public class TicTacToe {
     private final List<Player> playerList=new ArrayList<>();
     private Player nextPlayer;
 
-    public TicTacToe(Player player1, Player player2) {
+    public TicTacToe(Player player1, Player player2) throws TicTacToeException{
+
+        if(player1 == null)throw new TicTacToeException("Player 1 is null");
+       if(player2 == null)throw new TicTacToeException("Player 2 is null");
+
         this.player1 = player1;
         playerList.add(player1);
         this.player2 = player2;
         playerList.add(player1);
         playerList.add(player2);
         nextPlayer=player1;
+
+        player1.setOpponent(player2);
+        player2.setOpponent(player1);
+
+        player1.setSymbol('X');
+        player2.setSymbol('O');
+
+
         System.out.println("Cross & Naught :D");
         //fill -  empty
         for (char i[] : grid) {
@@ -45,12 +57,12 @@ public class TicTacToe {
         String out = "";
         for (char i[] : grid) {
             for (char j : i) {
-                out += j + " ";
+                out += j;
             }
             out += "\n";
 
         }
-        return out;
+        return out.trim();
     }
 
     public void printGrid() {
@@ -96,16 +108,30 @@ public class TicTacToe {
     }
 
     public void move(Player player, Point point) throws TicTacToeException {
-       if(point.x>=gridSize || point.y>=gridSize)throw new TicTacToeException("Point is out of bounds. Grid size is "+gridSize+" x "+gridSize);
+        if(player == null)throw new TicTacToeException("Player is null");
+        else if(player == null)throw new TicTacToeException("Player is null");
 
-        if(!whoIsNext().equals(player))throw new TicTacToeException(player.getName()+" is not next");
+       else if(point.x<0 || point.y<0 || point.x>=gridSize || point.y>=gridSize)throw new TicTacToeException("Point is out of bounds. Grid size is "+gridSize+" x "+gridSize);
+
+        else if(!whoIsNext().equals(player))throw new TicTacToeException(player.getName()+" is not next");
 
 
-        if(!canMove(player))throw new TicTacToeException("It is not "+player.getName()+"'s turn");
+        else if(!canMove(player))throw new TicTacToeException("It is not "+player.getName()+"'s turn");
+
+        if(!canMove(point)) throw new TicTacToeException("Cannot move to this point: "+grid[point.y][point.x]+" already in place");
+
+        else if(isGameOver()) throw new TicTacToeException("Game already over");
+
+
 
         grid[point.y][point.x]=player.getSymbol();
+        player.move(point);
         nextPlayer=player1.equals(player)?player2:player1;
         this.update();
 
+    }
+//move the next player to this point
+    public void move(Point point) throws TicTacToeException {
+        move(whoIsNext(), point);
     }
 }
